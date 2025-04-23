@@ -163,7 +163,9 @@ def profile(request, username):
 
     profile = get_object_or_404(User, username=username)
 
-    conditions = Q(author__username=username)
+    conditions = (
+        Q(author__username=username)
+    )
     if not request.user.is_authenticated or profile != request.user:
         conditions &= Q(
             pub_date__lt=timezone.now()
@@ -177,7 +179,16 @@ def profile(request, username):
 
     posts = Post.objects.all().filter(
         conditions
-    ).order_by('-pub_date').annotate(comment_count=Count('comment', filter=(Q(comment__is_published=True)))).order_by(
+    ).order_by(
+        '-pub_date'
+    ).annotate(
+        comment_count=Count(
+            'comment',
+            filter=(
+                Q(comment__is_published=True)
+            )
+        )
+    ).order_by(
         '-pub_date'
     )
 
