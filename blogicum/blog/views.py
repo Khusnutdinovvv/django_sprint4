@@ -177,7 +177,7 @@ def profile(request, username):
             location__is_published=True
         )
 
-    posts=Post.objects.all().filter(
+    posts = Post.objects.all().filter(
         conditions
     ).order_by(
         '-pub_date'
@@ -202,9 +202,9 @@ def profile(request, username):
         '-pub_date'
     )
 
-    page_obj=get_paginator(request, posts)
+    page_obj = get_paginator(request, posts)
 
-    context={
+    context = {
         'profile': profile,
         'page_obj': page_obj,
     }
@@ -212,74 +212,74 @@ def profile(request, username):
     return render(request, template_name, context)
 
 
-@ login_required
+@login_required
 def edit_profile(request):
-    template_name='blog/user.html'
+    template_name = 'blog/user.html'
 
-    form=UserEditForm(request.POST or None, instance=request.user)
+    form = UserEditForm(request.POST or None, instance=request.user)
 
     if request.method == 'POST' and form.is_valid():
         form.save()
         return redirect('blog:profile', username=request.user)
 
-    context={
+    context = {
         'form': form,
     }
 
     return render(request, template_name, context)
 
 
-@ login_required
+@login_required
 def delete_post(request, id):
-    template_name='blog/create.html'
+    template_name = 'blog/create.html'
 
-    post=get_object_or_404(
+    post = get_object_or_404(
         Post,
         pk=id,
         author=request.user,
     )
 
-    form=PostForm(instance=post)
+    form = PostForm(instance=post)
 
     if request.method == 'POST':
         post.delete()
 
         return redirect('blog:profile', username=request.user)
 
-    context={
+    context = {
         'form': form
     }
 
     return render(request, template_name, context)
 
 
-@ login_required
+@login_required
 def add_comment(request, post_id, comment_id=None):
-    template_name='blog/comment.html'
+    template_name = 'blog/comment.html'
 
-    post=get_object_or_404(Post, pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
 
-    comment=None
+    comment = None
     if comment_id:
-        comment=get_object_or_404(
+        comment = get_object_or_404(
             Comment,
             pk=comment_id,
             post=post,
             author=request.user
         )
 
-    form=CommentForm(request.POST or None, instance=comment)
+    form = CommentForm(request.POST or None, instance=comment)
 
     if form.is_valid():
-        comment=form.save(commit=False)
+        comment = form.save(commit=False)
         if not comment_id:
-            comment.author=request.user
-            comment.post=post
+            comment.author = request.user
+            comment.post = post
         comment.save()
 
         return redirect('blog:post_detail', id=post_id)
 
-    context={
+    context = {
         'form': form,
         'comment': comment,
     }
@@ -287,15 +287,15 @@ def add_comment(request, post_id, comment_id=None):
     return render(request, template_name, context)
 
 
-@ login_required
+@login_required
 def delete_comment(request, post_id, comment_id):
-    template_name='blog/comment.html'
+    template_name = 'blog/comment.html'
 
-    post=get_object_or_404(
+    post = get_object_or_404(
         Post,
         pk=post_id
     )
-    comment=get_object_or_404(
+    comment = get_object_or_404(
         Comment,
         pk=comment_id,
         post=post,
@@ -307,7 +307,7 @@ def delete_comment(request, post_id, comment_id):
 
         return redirect('blog:post_detail', id=post_id)
 
-    context={
+    context = {
         'comment': comment
     }
 
